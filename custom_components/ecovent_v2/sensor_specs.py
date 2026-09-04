@@ -129,6 +129,14 @@ SENSOR_SPECS = (
         required_params=("air_quality",),
     ),
     SensorSpec(
+        "_light_level",
+        "Light level",
+        "light_level",
+        state_class=SensorStateClass.MEASUREMENT,
+        icon="mdi:brightness-6",
+        required_params=("light_level",),
+    ),
+    SensorSpec(
         "_speed",
         "Speed fan",
         "fan1_speed",

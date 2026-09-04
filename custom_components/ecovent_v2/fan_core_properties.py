@@ -382,6 +382,16 @@ class FanCorePropertiesMixin:
         self._air_quality = value
 
     @property
+    def light_level(self):
+        return self._light_level
+
+    @light_level.setter
+    def light_level(self, input):
+        # Raw reading from the unit's built-in light sensor. The scale is not
+        # documented by the vendor, so no range is asserted here.
+        self._light_level = self._decode_uint(input)
+
+    @property
     def air_quality_treshold(self):
         return self._air_quality_treshold
 

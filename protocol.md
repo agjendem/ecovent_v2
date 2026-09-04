@@ -568,10 +568,28 @@ Implemented Arc Smart / O2 Supreme parameters:
 | 0x031E | `all_day_airflow` | R/W/RW | Airflow in 24 hour mode | select |
 | 0x031F | `air_quality_treshold` | R/W/RW/INC/DEC | Air quality threshold setting | number |
 | 0x0320 | `air_quality` | R | Current air quality level | sensor |
+| 0x0321 | `light_level` | R | Raw reading from the built-in light sensor, uncalibrated scale | sensor |
 | 0x0323 | `temperature_status` | R | Temperature sensor status | diagnostic binary sensor |
 | 0x0324 | `temperature_sensor_state` | R/W/RW | Temperature sensor-based control | switch |
 | 0x0325 | `temperature_treshold` | R/W/RW/INC/DEC | Temperature threshold setting, 18–36 °C | number |
 | 0x032F | `temperature_airflow` | R/W/RW | Airflow when the temperature sensor is triggered | select |
+
+`0x0321` is not described in the vendor PDFs. It was identified on a Flexit Bodo
+Supreme (unit type `0x0D00`, firmware `0.2 2024-06-24`) by correlating the register
+against an independently controlled ceiling light in the same room:
+
+| Time | Ceiling light | `0x0321` |
+| --- | --- | --- |
+| 16:01:06 | switched off | starts falling at 16:01:08 |
+| 16:01:36 | off | 9 |
+| 16:05:56 | switched on | 65 at 16:05:58 |
+
+Both transitions land within one 5-second polling interval of the light switch, and a
+separate Zigbee illuminance sensor in the same room moved 22 → 73 lux across the same
+event while the register moved 10 → 65. The two do not share a scale, so the register is
+exposed as a unitless measurement rather than as `SensorDeviceClass.ILLUMINANCE` in lux.
+The value is independent of fan speed: it held at 64–66 while the fan ramped from 2340
+back down to 540 rpm at the end of a boost.
 
 The Arc/O2 PDFs also document Wi-Fi setup mode, SSID/password/encryption, DHCP,
 DNS, gateway, factory reset, and setup apply/discard rows. Those remain intentionally
